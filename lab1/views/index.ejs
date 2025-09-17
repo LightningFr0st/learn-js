@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+
+
+    <section class="new-task">
+    <h2>Новая задача</h2>
+    <form action="/tasks" method="post" enctype="multipart/form-data">
+        <label>Название: <input type="text" name="title" required></label>
+        <label>Описание: <textarea name="description"></textarea></label>
+        <label>Ожидаемая дата завершения: <input type="date" name="dueDate"></label>
+        <label>Вложения: <input type="file" name="attachments" multiple></label>
+        <button type="submit">Создать</button>
+    </form>
+    </section>
+
+
+    <section class="tasks">
+    <h2>Список задач — фильтр: <strong><%= filter %></strong></h2>
+    <% if (tasks.length === 0) { %>
+        <p>Задач нет — добавьте первую!</p>
+    <% } else { %>
+    <ul class="task-list">
+        <% tasks.forEach(task => { %>
+            <li class="task <%= task.completed ? 'done' : '' %>">
+            <h3><%= task.title %></h3>
+            <p class="descr"><%= task.description %></p>
+            <p>Статус: <strong><%= task.completed ? 'Выполнено' : 'В процессе' %></strong></p>
+            <p>Ожидаемая дата: <%= task.dueDate ? task.dueDate : '—' %></p>
+            <% if (task.attachments && task.attachments.length) { %>
+                <div class="attachments">
+                    <strong>Вложения:</strong>
+                        <ul>
+                        <% task.attachments.forEach(a => { %>
+                            <li><a href="<%= a.url %>" target="_blank" rel="noopener"><%= a.originalname %></a></li>
+                        <% }) %>
+                        </ul>
+                </div>
+            <% } %>
+            <div class="actions">
+                <a class="btn" href="/tasks/<%= task.id %>/edit">Редактировать</a>
+                <form method="post" action="/tasks/<%= task.id %>?_method=DELETE" style="display:inline">
+                    <button class="btn danger" type="submit">Удалить</button>
+                </form>
+            </div>
+            </li>
+        <% }) %>
+    </ul>
+    <% } %>
+    </section>
+
+
+    <%- include('partials/footer') %>
+</body>
+</html>

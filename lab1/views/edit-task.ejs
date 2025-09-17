@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Редактирование задачи</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<%- include('partials/header') %>
+
+
+<section class="edit">
+    <h2>Редактировать: <%= task.title %></h2>
+    <form action="/tasks/<%= task.id %>?_method=PUT" method="post" enctype="multipart/form-data">
+        <label>Название: <input type="text" name="title" value="<%= task.title %>" required></label>
+        <label>Описание: <textarea name="description"><%= task.description %></textarea></label>
+        <label>Ожидаемая дата завершения: <input type="date" name="dueDate" value="<%= task.dueDate ? task.dueDate : '' %>"></label>
+        <label>Выполнена: <input type="checkbox" name="completed" <%= task.completed ? 'checked' : '' %>></label>
+        <div>
+            <strong>Старые вложения:</strong>
+            <% if (task.attachments && task.attachments.length) { %>
+            <ul>
+            <% task.attachments.forEach(a => { %>
+                <li><a href="<%= a.url %>" target="_blank" rel="noopener"><%= a.originalname %></a></li>
+            <% }) %>
+            </ul>
+            <% } else { %>
+                <p>Нет вложений</p>
+            <% } %>
+        </div>
+        <label>Добавить вложения: <input type="file" name="attachments" multiple></label>
+        <button type="submit">Сохранить</button>
+        <a class="btn" href="/">Отмена</a>
+    </form>
+</section>
+
+
+<%- include('partials/footer') %>
+</body>
+</html>
