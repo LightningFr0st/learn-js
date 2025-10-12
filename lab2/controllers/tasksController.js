@@ -1,11 +1,9 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-// Временное хранилище в памяти (заменится на БД в будущем)
 let tasks = [];
 let idCounter = 1;
 
-// Получение всех задач с фильтрацией
 exports.getTasks = (req, res) => {
     const { status } = req.query;
     let filteredTasks = tasks;
@@ -17,7 +15,6 @@ exports.getTasks = (req, res) => {
     res.json(filteredTasks);
 };
 
-// Создание новой задачи
 exports.createTask = (req, res) => {
     const { title, dueDate } = req.body;
     
@@ -37,7 +34,6 @@ exports.createTask = (req, res) => {
     res.status(201).json(newTask);
 };
 
-// Обновление задачи
 exports.updateTask = (req, res) => {
     const { id } = req.params;
     const { title, status, dueDate } = req.body;
@@ -54,8 +50,7 @@ exports.updateTask = (req, res) => {
     res.json(task);
 };
 
-// Удаление задачи
-exports.deleteTask = async (req, res) => { // Добавьте async
+exports.deleteTask = async (req, res) => {
     const { id } = req.params;
     const taskId = parseInt(id);
     const index = tasks.findIndex(t => t.id === taskId);
@@ -66,16 +61,14 @@ exports.deleteTask = async (req, res) => { // Добавьте async
 
     const task = tasks[index];
 
-    // Удаляем прикрепленные файлы
     if (task.attachments && task.attachments.length > 0) {
         for (const attachment of task.attachments) {
-            const filePath = path.join('uploads', attachment.filename); // Используйте path.join
+            const filePath = path.join('uploads', attachment.filename);
             console.log(filePath);
             try {
-                await fs.unlink(filePath); // Удаляем файл
+                await fs.unlink(filePath);
                 console.log(`File ${filePath} deleted`);
             } catch (err) {
-                // Если файла нет на диске, не прерываем выполнение
                 if (err.code !== 'ENOENT') {
                     console.error(`Error deleting file ${filePath}:`, err);
                 }
@@ -83,12 +76,10 @@ exports.deleteTask = async (req, res) => { // Добавьте async
         }
     }
 
-    // Удаляем задачу из массива
     tasks.splice(index, 1);
     res.status(204).send();
 };
 
-// Добавление файла к задаче
 exports.uploadFile = (req, res) => {
     const { id } = req.params;
     

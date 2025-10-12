@@ -1,0 +1,115 @@
+:root {
+  --primary: #7e57c2;      /* фиолетовый */
+  --primary-dark: #5e35b1;
+  --accent: #26a69a;       /* бирюзовый */
+  --danger: #e53935;
+  --danger-dark: #b71c1c;
+
+  --background-light: #f0f4ff;
+  --background-accent: #e6f9f6;
+
+  font-family: "Segoe UI", Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  display: flex;
+  place-items: center;
+  background: linear-gradient(135deg, var(--background-light), var(--background-accent));
+  color: #2c3e50;
+}
+
+/* Заголовки */
+h1, h2, h3 {
+  color: var(--primary-dark);
+  margin: 0.6em 0;
+  font-weight: 600;
+}
+
+/* Ссылки */
+a {
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover {
+  color: #1d7e73;
+  text-decoration: underline;
+}
+
+/* Кнопки */
+button {
+  border-radius: 8px;
+  border: none;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--primary);
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+button:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+button:focus,
+button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Варианты кнопок */
+button.danger {
+  background-color: var(--danger);
+}
+button.danger:hover {
+  background-color: var(--danger-dark);
+}
+
+button.outline {
+  background: white;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+button.outline:hover {
+  background: #ede7f6;
+}
+
+/* Карточки */
+.card {
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 16px;
+  margin: 12px 0;
+  transition: transform 0.15s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+/* Адаптив */
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+  h1 {
+    font-size: 1.8rem;
+  }
+  button {
+    width: 100%;
+  }
+}

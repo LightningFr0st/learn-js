@@ -3,13 +3,12 @@ const AUTH_URL = '/api/auth';
 
 let isAuthenticated = false;
 
-// Проверяем аутентификацию при загрузке
 document.addEventListener('DOMContentLoaded', checkAuth);
 
 async function checkAuth() {
     try {
         const response = await fetch(`${AUTH_URL}/me`, {
-            credentials: 'include' // Отправляем cookies с каждым запросом
+            credentials: 'include'
         });
         
         if (response.ok) {
@@ -53,7 +52,7 @@ async function login() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ username, password }),
-            credentials: 'include' // Отправляем cookies
+            credentials: 'include'
         });
 
         if (response.ok) {
@@ -86,7 +85,7 @@ async function register() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ username, password }),
-            credentials: 'include' // Отправляем cookies
+            credentials: 'include'
         });
 
         if (response.ok) {
@@ -108,7 +107,6 @@ function showMessage(element, message, type = 'error') {
     element.classList.remove('hidden');
 }
 
-// Загрузка задач
 async function loadTasks() {
     if (!isAuthenticated) return;
     
@@ -117,7 +115,7 @@ async function loadTasks() {
         const url = statusFilter ? `${API_URL}?status=${statusFilter}` : API_URL;
         
         const response = await fetch(url, {
-            credentials: 'include' // Отправляем cookies
+            credentials: 'include'
         });
         
         if (response.status === 401) {
@@ -133,7 +131,6 @@ async function loadTasks() {
     }
 }
 
-// Отображение задач
 function renderTasks(tasks) {
     const tasksList = document.getElementById('tasksList');
     
@@ -170,7 +167,6 @@ function renderTasks(tasks) {
     `).join('');
 }
 
-// Добавление задачи
 async function addTask() {
     const titleInput = document.getElementById('taskTitle');
     const dueDateInput = document.getElementById('taskDueDate');
@@ -192,7 +188,7 @@ async function addTask() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(taskData),
-            credentials: 'include' // Отправляем cookies
+            credentials: 'include'
         });
 
         if (response.status === 401) {
@@ -213,7 +209,6 @@ async function addTask() {
     }
 }
 
-// Обновление статуса задачи
 async function updateTaskStatus(taskId, newStatus) {
     try {
         const response = await fetch(`${API_URL}/${taskId}`, {
@@ -222,7 +217,7 @@ async function updateTaskStatus(taskId, newStatus) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ status: newStatus }),
-            credentials: 'include' // Отправляем cookies
+            credentials: 'include'
         });
 
         if (response.status === 401) {
@@ -239,14 +234,13 @@ async function updateTaskStatus(taskId, newStatus) {
     }
 }
 
-// Удаление задачи
 async function deleteTask(taskId) {
     if (!confirm('Удалить задачу?')) return;
 
     try {
         const response = await fetch(`${API_URL}/${taskId}`, {
             method: 'DELETE',
-            credentials: 'include' // Отправляем cookies
+            credentials: 'include'
         });
 
         if (response.status === 401) {
@@ -265,7 +259,6 @@ async function deleteTask(taskId) {
     }
 }
 
-// Загрузка файла
 async function uploadFile(taskId) {
     const fileInput = document.getElementById(`file-${taskId}`);
     const file = fileInput.files[0];
@@ -282,7 +275,7 @@ async function uploadFile(taskId) {
         const response = await fetch(`${API_URL}/${taskId}/attachments`, {
             method: 'POST',
             body: formData,
-            credentials: 'include' // Отправляем cookies
+            credentials: 'include'
         });
 
         if (response.status === 401) {

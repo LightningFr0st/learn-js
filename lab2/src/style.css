@@ -1,0 +1,48 @@
+body {
+     font-family: Arial, Helvetica, sans-serif;
+     max-width: 900px;
+     margin: 20px auto;
+     padding: 0 10px;
+}
+ header h1 {
+     margin: 0;
+}
+ .new-task, .tasks, .edit {
+     margin-bottom: 24px;
+}
+ label {
+     display: block;
+     margin: 8px 0;
+}
+ input[type="text"], input[type="date"], textarea {
+     width: 100%;
+     padding: 6px;
+     box-sizing: border-box;
+}
+ .task-list {
+     list-style: none;
+     padding: 0;
+}
+ .task {
+     border: 1px solid #ddd;
+     padding: 10px;
+     margin-bottom: 8px;
+     border-radius: 6px;
+}
+ .task.done {
+     background: #f0fff0;
+}
+ .actions {
+     margin-top: 8px;
+}
+ .btn {
+     display: inline-block;
+     padding: 6px 10px;
+     border-radius: 4px;
+     border: 1px solid #888;
+     text-decoration: none;
+}
+ .btn.danger {
+     background: #ffdddd;
+     border-color: #ff8888;
+}

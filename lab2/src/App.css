@@ -1,0 +1,154 @@
+body {
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: linear-gradient(135deg, #f0f4ff, #e6f9f6);
+  margin: 0;
+  padding: 0;
+  color: #2c3e50;
+}
+
+.app-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 2rem;
+  color: #4a148c;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.task-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.task-form input,
+.task-form select,
+.task-form button {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.task-form button {
+  background: #7e57c2;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.task-form button:hover {
+  background: #5e35b1;
+}
+
+.filter-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.filter-buttons button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #7e57c2;
+  cursor: pointer;
+  background: white;
+  color: #7e57c2;
+  transition: all 0.2s ease-in-out;
+}
+
+.filter-buttons button:hover {
+  background: #ede7f6;
+}
+
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.task-card {
+  background: white;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  position: relative;
+  transition: transform 0.15s ease-in-out;
+}
+
+.task-card:hover {
+  transform: translateY(-3px);
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.status {
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: white;
+}
+
+.status.todo {
+  background: #ef5350;
+}
+
+.status.in-progress {
+  background: #ffca28;
+  color: #444;
+}
+
+.status.done {
+  background: #26a69a;
+}
+
+.task-body {
+  font-size: 15px;
+  color: #555;
+}
+
+.task-body a {
+  display: inline-block;
+  margin-top: 6px;
+  color: #26a69a;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.task-body a:hover {
+  text-decoration: underline;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  color: #e53935;
+  transition: color 0.2s ease-in-out;
+}
+
+.delete-btn:hover {
+  color: #b71c1c;
+}

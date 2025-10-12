@@ -1,23 +1,20 @@
 const express = require('express');
 const tasksRouter = require('./routes/tasks');
-const authRouter = require('./routes/auth'); // Добавьте эту строку
-const cookieParser = require('cookie-parser'); // Добавьте эту строку
-const authenticateToken = require('./middleware/auth'); // Добавьте эту строку
+const authRouter = require('./routes/auth');
+const cookieParser = require('cookie-parser');
+const authenticateToken = require('./middleware/auth');
 const path = require('path');
 const app = express();
 const PORT = 3000;
 
-// Middleware
 app.use(express.json());
-app.use(cookieParser()); // Добавьте эту строку
+app.use(cookieParser());
 app.use('/uploads', express.static('uploads'));
 app.use(express.static('public'));
 
-// Маршруты аутентификации (публичные)
-app.use('/api/auth', authRouter); // Добавьте эту строку
+app.use('/api/auth', authRouter);
 
-// Защищенные маршруты (требуют аутентификации) :cite[5]
-app.use('/api/tasks', authenticateToken, tasksRouter); // Добавьте authenticateToken
+app.use('/api/tasks', authenticateToken, tasksRouter);
 
 app.all('/{*any}', (req, res, next)  => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
