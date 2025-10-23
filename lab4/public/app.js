@@ -1,8 +1,9 @@
-const API_URL = '/api/tasks';
 const AUTH_URL = '/api/auth';
 
 let isAuthenticated = false;
-let currentUser = null;
+let socket;
+let currentTasks = [];
+let currentFilter = '';
 
 document.addEventListener('DOMContentLoaded', checkAuth);
 
@@ -14,8 +15,7 @@ async function checkAuth() {
         
         if (response.ok) {
             const data = await response.json();
-            currentUser = data.user;
-            showApp();
+            showApp(data.user);
         } else {
             showAuth();
         }
@@ -25,28 +25,54 @@ async function checkAuth() {
     }
 }
 
-function showApp() {
+function showApp(user) {
     isAuthenticated = true;
     document.getElementById('auth-section').classList.add('hidden');
     document.getElementById('app').classList.remove('hidden');
-    document.getElementById('user-info').classList.remove('hidden');
-    document.getElementById('current-user').textContent = currentUser.username;
-    loadTasks();
+    
+    const userInfo = document.createElement('div');
+    userInfo.innerHTML = `
+        <div style="position: absolute; top: 10px; right: 10px; background: #f5f5f5; padding: 10px; border-radius: 5px;">
+            ${user.username}
+            <button onclick="logout()" style="margin-left: 10px;">Выйти</button>
+        </div>
+    `;
+    document.body.prepend(userInfo);
+    
+    socket = io();
+    
+    socket.on('tasks:load', (tasks) => {
+        currentTasks = tasks;
+        applyFilter();
+    });
 }
 
 function showAuth() {
     isAuthenticated = false;
-    currentUser = null;
+    if (socket) {
+        socket.disconnect();
+        socket = null;
+    }
     document.getElementById('auth-section').classList.remove('hidden');
     document.getElementById('app').classList.add('hidden');
-    document.getElementById('user-info').classList.add('hidden');
-    clearAuthForm();
+    
+    const userInfo = document.querySelector('div[style*="position: absolute; top: 10px; right: 10px;"]');
+    if (userInfo) {
+        userInfo.remove();
+    }
 }
 
-function clearAuthForm() {
-    document.getElementById('username').value = '';
-    document.getElementById('password').value = '';
-    document.getElementById('auth-message').classList.add('hidden');
+function applyFilter() {
+    const filterValue = document.getElementById('statusFilter').value;
+    currentFilter = filterValue;
+    
+    let filteredTasks = currentTasks;
+    
+    if (filterValue) {
+        filteredTasks = currentTasks.filter(task => task.status === filterValue);
+    }
+    
+    renderTasks(filteredTasks);
 }
 
 async function login() {
@@ -71,8 +97,7 @@ async function login() {
 
         if (response.ok) {
             const data = await response.json();
-            currentUser = data.user;
-            showApp();
+            showApp(data.user);
             showMessage(messageDiv, 'Вход выполнен успешно', 'success');
         } else {
             const error = await response.json();
@@ -106,8 +131,7 @@ async function register() {
 
         if (response.ok) {
             const data = await response.json();
-            currentUser = data.user;
-            showApp();
+            showApp(data.user);
             showMessage(messageDiv, 'Регистрация успешна', 'success');
         } else {
             const error = await response.json();
@@ -121,21 +145,15 @@ async function register() {
 
 async function logout() {
     try {
-        const response = await fetch(`${AUTH_URL}/logout`, {
+        await fetch(`${AUTH_URL}/logout`, {
             method: 'POST',
             credentials: 'include'
         });
-
-        if (response.ok) {
-            showAuth();
-            showMessage(document.getElementById('auth-message'), 'Вы успешно вышли из системы', 'success');
-        } else {
-            console.error('Logout failed');
-        }
+        showAuth();
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
     } catch (error) {
         console.error('Logout error:', error);
-    } finally {
-        showAuth();
     }
 }
 
@@ -143,30 +161,6 @@ function showMessage(element, message, type = 'error') {
     element.textContent = message;
     element.className = type;
     element.classList.remove('hidden');
-}
-
-async function loadTasks() {
-    if (!isAuthenticated) return;
-    
-    try {
-        const statusFilter = document.getElementById('statusFilter').value;
-        const url = statusFilter ? `${API_URL}?status=${statusFilter}` : API_URL;
-        
-        const response = await fetch(url, {
-            credentials: 'include'
-        });
-        
-        if (response.status === 401) {
-            showAuth();
-            return;
-        }
-        
-        const tasks = await response.json();
-        renderTasks(tasks);
-    } catch (error) {
-        console.error('Ошибка загрузки задач:', error);
-        document.getElementById('tasksList').innerHTML = '<p>Ошибка загрузки задач</p>';
-    }
 }
 
 function renderTasks(tasks) {
@@ -219,82 +213,32 @@ async function addTask() {
         return;
     }
 
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(taskData),
-            credentials: 'include'
-        });
-
-        if (response.status === 401) {
-            showAuth();
-            return;
-        }
-
-        if (response.ok) {
+    socket.emit('task:create', taskData, (response) => {
+        if (response.success) {
             titleInput.value = '';
             dueDateInput.value = '';
-            loadTasks();
         } else {
-            alert('Ошибка при создании задачи');
+            alert('Ошибка при создании задачи: ' + response.error);
         }
-    } catch (error) {
-        console.error('Ошибка:', error);
-        alert('Ошибка при создании задачи');
-    }
+    });
 }
 
 async function updateTaskStatus(taskId, newStatus) {
-    try {
-        const response = await fetch(`${API_URL}/${taskId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ status: newStatus }),
-            credentials: 'include'
-        });
-
-        if (response.status === 401) {
-            showAuth();
-            return;
+    socket.emit('task:update', { id: taskId, status: newStatus }, (response) => {
+        if (!response.success) {
+            alert('Ошибка при обновлении задачи: ' + response.error);
         }
-
-        if (!response.ok) {
-            alert('Ошибка при обновлении задачи');
-        }
-    } catch (error) {
-        console.error('Ошибка:', error);
-        alert('Ошибка при обновлении задачи');
-    }
+    });
 }
 
 async function deleteTask(taskId) {
     if (!confirm('Удалить задачу?')) return;
 
-    try {
-        const response = await fetch(`${API_URL}/${taskId}`, {
-            method: 'DELETE',
-            credentials: 'include'
-        });
-
-        if (response.status === 401) {
-            showAuth();
-            return;
+    socket.emit('task:delete', taskId, (response) => {
+        if (!response.success) {
+            alert('Ошибка при удалении задачи: ' + response.error);
         }
-
-        if (response.ok) {
-            loadTasks();
-        } else {
-            alert('Ошибка при удалении задачи');
-        }
-    } catch (error) {
-        console.error('Ошибка:', error);
-        alert('Ошибка при удалении задачи');
-    }
+    });
 }
 
 async function uploadFile(taskId) {
@@ -310,22 +254,20 @@ async function uploadFile(taskId) {
     formData.append('file', file);
 
     try {
-        const response = await fetch(`${API_URL}/${taskId}/attachments`, {
+        const response = await fetch(`/api/tasks/${taskId}/attachments`, {
             method: 'POST',
             body: formData,
             credentials: 'include'
         });
 
-        if (response.status === 401) {
-            showAuth();
-            return;
-        }
-
         if (response.ok) {
             fileInput.value = '';
-            loadTasks();
+            if (socket) {
+                const userTasks = currentTasks;
+            }
         } else {
-            alert('Ошибка при загрузке файла');
+            const error = await response.json();
+            alert('Ошибка при загрузке файла: ' + error.error);
         }
     } catch (error) {
         console.error('Ошибка:', error);

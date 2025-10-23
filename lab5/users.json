@@ -1,0 +1,15 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "usr",
+      "password": "$2b$10$prNb231VcPhGRRzagSZR4OZyN8GY8Nq3aDcnGSvlSdwyUeAyjdsta"
+    },
+    {
+      "id": 2,
+      "username": "qwe",
+      "password": "$2b$10$/Bp7uQyrKnUN.Uio1Rbo.uqKfOhIjVfdoLHBDPJzBlFLKEH4A/68S"
+    }
+  ],
+  "userIdCounter": 3
+}

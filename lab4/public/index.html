@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
         .task { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
@@ -12,16 +13,13 @@
         button { margin: 5px; padding: 5px 10px; }
         input, select { margin: 5px; padding: 5px; }
         #auth-section { margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 5px; }
-        #user-info { margin-bottom: 20px; padding: 15px; background: #e8f5e8; border-radius: 5px; }
         .hidden { display: none; }
         .error { color: red; }
-        .success { color: green; }
     </style>
 </head>
 <body>
     <h1>Менеджер задач</h1>
     
-    <!-- Секция аутентификации -->
     <div id="auth-section">
         <h3>Аутентификация</h3>
         <div>
@@ -33,13 +31,6 @@
         <div id="auth-message" class="error hidden"></div>
     </div>
 
-    <!-- Секция информации о пользователе -->
-    <div id="user-info" class="hidden">
-        <p>Вы вошли как: <strong id="current-user"></strong></p>
-        <button onclick="logout()">Выйти</button>
-    </div>
-
-    <!-- Основное приложение (скрыто до аутентификации) -->
     <div id="app" class="hidden">
         <div>
             <h3>Добавить задачу</h3>
@@ -50,7 +41,7 @@
 
         <div class="filters">
             <h3>Фильтры</h3>
-            <select id="statusFilter" onchange="loadTasks()">
+            <select id="statusFilter" onchange="applyFilter()">
                 <option value="">Все задачи</option>
                 <option value="pending">В процессе</option>
                 <option value="completed">Завершенные</option>
